@@ -55,7 +55,7 @@ public class RiverPart{
 	}
 	
 	@Override
-	public String toString() {
+	public String toString() {		
 		return "{Figures: " + figures.toString() + "}";
 	}
 	

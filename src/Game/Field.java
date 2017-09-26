@@ -21,7 +21,8 @@ import java.util.Random;
 public class Field {
 	private List<RiverPart> riverParts;
 	private GameSettings gameSettings;	
-	private final int FIGURE_COUNT = 6;
+	public static final int FIGURE_COUNT = 6;
+		 
 		
 	public Field(GameSettings gameSettings)
 	{
@@ -61,6 +62,12 @@ public class Field {
 		return riverParts.size();
 	}
 	
+	public RiverPart getRiverPartByIndex(int index)
+	{
+		return riverParts.get(index);
+	}
+	
+		
 	public boolean allFishesFished()
 	{
 		if(riverParts.get(0).getFigures().size() == FIGURE_COUNT-1)
@@ -70,26 +77,25 @@ public class Field {
 	}
 	
 	
-	public void move(Color color)
+	public void move(Color color) 
 	{
 		Position selectedFigurePosition = getFigurePosition(color);
-		
+				
 		//move anglers
 		if(selectedFigurePosition.getX() == 0)
 		{
 			fishing(selectedFigurePosition);
-			riverParts.remove(selectedFigurePosition.getX());
-		}
-				
+			riverParts.remove(selectedFigurePosition.getX()+1);
+		}				
 		// fish already in sea --> select new fish 
-		if(selectedFigurePosition.getX() == getRiverSize()-1)
+		else if(selectedFigurePosition.getX() == getRiverSize()-1)
 		{
 			Position rndFishPos = selectRandomFish();
 			moveFigureForword(rndFishPos);
 		}
-				
 		//move fish
-		moveFigureForword(selectedFigurePosition);
+		else		
+			moveFigureForword(selectedFigurePosition);
 		
 	}	
 	
@@ -100,7 +106,6 @@ public class Field {
 		RiverPart newRiverPart = riverParts.get(fishPosition.getX() + 1);
 		Figure fish = oldRiverPart.getFigureByIndex(fishPosition.getY());
 		
-		riverParts.get(fishPosition.getX()+1).addFigure(fish);
 		newRiverPart.addFigure(fish);
 		oldRiverPart.removeFigure(fishPosition.getY());	
 	}
@@ -114,7 +119,7 @@ public class Field {
 		for(int i=1; i < getRiverSize()-1; i++)
 		{
 			RiverPart riverPart = riverParts.get(i);
-			for(int j=0; j < riverPart.getFigures().size(); i++)
+			for(int j=0; j < riverPart.getFigures().size(); j++)
 				freeFishes.add(new Position(i, j));
 		}
 		
@@ -136,7 +141,7 @@ public class Field {
 			
 	}
 	
-	private Position getFigurePosition(Color color)
+	public Position getFigurePosition(Color color)
 	{		
 		for(int x=0; x < getRiverSize(); x++)
 		{

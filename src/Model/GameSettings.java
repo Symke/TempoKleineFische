@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class GameSettings {
 	public static final int MAX_RIVER_PARTS_COUNT = 10;
+	public static final int FIGURE_COUNT = 6;
 	
 	private List<Player> players;
 	private int riverPartsLeftCount; 

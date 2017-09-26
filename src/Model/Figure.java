@@ -29,6 +29,6 @@ public class Figure {
 	
 	@Override
 	public String toString() {		
-		return "{FigureType: " + figureType.name() + ", Color: " + color.name() + "}";
+		return "{FigureType: \"" + figureType.name() + "\", Color: \"" + color.name() + "\"}";
 	}
 }

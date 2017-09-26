@@ -49,4 +49,14 @@ public class Game {
 		return null;
 	}
 	
+	public static void drawGame(Field field)
+	{
+		System.out.println("====================================================================================================");
+		for (int i = 0; i < field.getRiverSize(); i++) {
+			System.out.println(field.getRiverPartByIndex(i).toString());
+		}
+		System.out.println("====================================================================================================");
+		System.out.println();
+	}
+	
 }
