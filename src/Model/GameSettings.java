@@ -9,25 +9,78 @@ import java.util.List;
  */
 public class GameSettings {
 	public static final int MAX_RIVER_PARTS_COUNT = 10;
-	public static final int FIGURE_COUNT = 6;
-	
+			
 	private List<Player> players;
 	private int riverPartsLeftCount; 
 	private int riverPartsRightCount;
-	
+	private List<Color> anglers;
+	private List<Color> fishes; 
+			
 	public GameSettings()
 	{
-		this.players = new ArrayList<Player>();
-		this.riverPartsLeftCount  = 5;
-		this.riverPartsRightCount = 5;
+		this(5,5);
 	}
 	
+	public GameSettings(int riverPartsLeftCount, int riverPartsRightCount)
+	{
+		this.players = new ArrayList<Player>();
+				
+		this.anglers = new ArrayList<Color>();
+		this.anglers.add(Color.RED);
+		this.anglers.add(Color.GREEN);
+		
+		this.fishes  = new ArrayList<Color>();
+		this.fishes.add(Color.BLUE);
+		this.fishes.add(Color.ORANGE);
+		this.fishes.add(Color.YELLOW);
+		this.fishes.add(Color.PINK);
+		
+		// default field size settings
+		setFieldSize(riverPartsLeftCount, riverPartsRightCount);
+	}
+	
+		
+	public List<Player> getPlayers() {
+		return players;
+	}
+
+
+	public void setPlayers(List<Player> players) {
+		this.players = players;
+	}
+
+
+	public List<Color> getAnglers() {
+		return anglers;
+	}
+
+	public void setAnglers(List<Color> anglers) {
+		this.anglers = anglers;
+	}
+
+
+
+	public List<Color> getFishes() {
+		return fishes;
+	}
+
+
+	public void setFishes(List<Color> fishes) {
+		this.fishes = fishes;
+	}
+
+
 	public int getRiverPartsLeftCount() {
 		return riverPartsLeftCount;
 	}	
 
 	public int getRiverPartsRightCount() {
 		return riverPartsRightCount;
+	}
+	
+	public int getFigureCount()
+	{
+		return anglers.size() + fishes.size();
 	}
 		
 	/***
@@ -43,16 +96,25 @@ public class GameSettings {
 			throw new IllegalArgumentException("River part count can't be samller than 0!");
 			
 		if(totalRiverParts > MAX_RIVER_PARTS_COUNT)
-			throw new IllegalArgumentException("Total river parts count to large!");
+			throw new IllegalArgumentException("The total number of river parts must not be grater than " + MAX_RIVER_PARTS_COUNT +"!");
 			
 		this.riverPartsLeftCount  = riverPartsLeftCount;
 		this.riverPartsRightCount = riverPartsRightCount;		
 		
 	}	
-	
+			
 	public void addPlayer(Player player)
 	{		
 		players.add(player);
+	}
+
+	private void addAngler(Color color) {
+		anglers.add(color);
+	}
+	
+	private void addFish(Color color)
+	{
+		fishes.add(color);
 	}
 
 	

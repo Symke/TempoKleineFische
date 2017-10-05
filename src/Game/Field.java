@@ -7,7 +7,9 @@ import Model.Color;
 import Model.Figure;
 import Model.GameSettings;
 import Model.Position;
+import Model.Color;
 import Model.RiverPart;
+import Model.Score;
 import Model.Figure.FigureType;
 
 import java.util.ArrayList;
@@ -21,7 +23,6 @@ import java.util.Random;
 public class Field {
 	private List<RiverPart> riverParts;
 	private GameSettings gameSettings;	
-	public static final int FIGURE_COUNT = 6;
 		 
 		
 	public Field(GameSettings gameSettings)
@@ -43,42 +44,71 @@ public class Field {
 			riverParts.add(new RiverPart());
 		
 		// Add anglers 
-		riverParts.get(0).addFigure(new Figure(Color.RED, FigureType.ANGLERS));
-		riverParts.get(0).addFigure(new Figure(Color.GREEN, FigureType.ANGLERS));
+		for (Color color : gameSettings.getAnglers()) 
+			riverParts.get(0).addFigure(new Figure(color, FigureType.ANGLERS));
+		
 			
 		
 		// Add fishes
 		int startPositionFishes = gameSettings.getRiverPartsLeftCount() + 1;
-		riverParts.get(startPositionFishes).addFigure(new Figure(Color.BLUE, FigureType.FISH));
-		riverParts.get(startPositionFishes).addFigure(new Figure(Color.ORANGE, FigureType.FISH));
-		riverParts.get(startPositionFishes).addFigure(new Figure(Color.YELLOW, FigureType.FISH));
-		riverParts.get(startPositionFishes).addFigure(new Figure(Color.PINK, FigureType.FISH));
+		for (Color color : gameSettings.getFishes()) 
+			riverParts.get(startPositionFishes).addFigure(new Figure(color, FigureType.FISH));
 		
-	}
+	}	
 	
-	
-	public int getRiverSize()
-	{
+	public int getRiverSize(){
 		return riverParts.size();
 	}
 	
-	public RiverPart getRiverPartByIndex(int index)
-	{
+	public RiverPart getRiverPartByIndex(int index)	{
 		return riverParts.get(index);
-	}
+	}	
+			
 	
-		
-	public boolean allFishesFished()
+	public boolean boatReachSea()
 	{
-		if(riverParts.get(0).getFigures().size() == FIGURE_COUNT-1)
-			return true;
-		else 
-			return false;
+		return getRiverSize() == 2;
 	}
 	
+	public boolean allFishesInSea()
+	{
+		int fishInSeaCount = getSeaPart().getFigures().size();
+		int totalFishCount  = gameSettings.getFishes().size();
+		
+		return fishInSeaCount == totalFishCount;
+	}		
 	
+	public int getAngeldFishCount()
+	{
+		return getBoat().getFigures().size()-gameSettings.getAnglers().size();
+	}
+	
+	public boolean allFishesAngled()
+	{
+		int totalFishCount  = gameSettings.getFishes().size();
+		
+		return getAngeldFishCount() == totalFishCount;
+	}
+
+	/**
+	 * The first river part includes the boat
+	 * @return
+	 */
+	public RiverPart getBoat()	{
+		return riverParts.get(0);
+	}
+	
+	/**
+	 * The last river part is the sea
+	 * @return
+	 */
+	public RiverPart getSeaPart()	{
+		return riverParts.get(getRiverSize()-1);
+	}
+		
 	public void move(Color color) 
 	{
+	
 		Position selectedFigurePosition = getFigurePosition(color);
 				
 		//move anglers
@@ -90,8 +120,8 @@ public class Field {
 		// fish already in sea --> select new fish 
 		else if(selectedFigurePosition.getX() == getRiverSize()-1)
 		{
-			Position rndFishPos = selectRandomFish();
-			moveFigureForword(rndFishPos);
+			Color rndFishPos = selectRandomFish();
+			move(rndFishPos);
 		}
 		//move fish
 		else		
@@ -109,25 +139,70 @@ public class Field {
 		newRiverPart.addFigure(fish);
 		oldRiverPart.removeFigure(fishPosition.getY());	
 	}
-		
 	
-	private Position selectRandomFish()
+			
+	/**
+	 * Select the a random fish and return it's position 
+	 * @return
+	 */
+	private Color selectRandomFish()
 	{
-		List<Position> freeFishes = new ArrayList<Position>();
+		Color selectedFigure = null;
+		List<Color> freeFishes = new ArrayList<Color>();
 		
-		// collect all fishes 
+		// collect all fishes in the river 
 		for(int i=1; i < getRiverSize()-1; i++)
 		{
 			RiverPart riverPart = riverParts.get(i);
-			for(int j=0; j < riverPart.getFigures().size(); j++)
-				freeFishes.add(new Position(i, j));
+			for(Figure figure : riverPart.getFigures())
+				freeFishes.add(figure.getColor());
 		}
 		
-		//select random fish
-		Random randomGenerator = new Random();		
-		return freeFishes.get(randomGenerator.nextInt(freeFishes.size()));
+		// select figure from boat if no free fishes left
+		if(freeFishes.size() == 0)
+			selectedFigure = gameSettings.getAnglers().get(0);
+		else
+		{
+			Random randomGenerator = new Random();		
+			selectedFigure = freeFishes.get(randomGenerator.nextInt(freeFishes.size()));				
+		}
+				
+		return selectedFigure;
 	}
 	
+//	/**
+//	 * Game is over if,
+//	 * 	- boat reach the sea
+//	 *  - all fishes are in the sea
+//	 *  - all fishes are angled 
+//	 * @return the winner 
+//	 */
+//	public boolean isGameOver(Score score)
+//	{
+//		boolean isOver = true; 
+//		
+//		int angledFishCount = getAngeldFishCount(); 
+//		int freeFishCount   = getSeaPart().getFigures().size(); 
+//		
+//		if (boatReachSea()) 
+//		{						
+//			if(angledFishCount == freeFishCount)
+//				score.setWinner(Score.DRAW);
+//			else if(angledFishCount > freeFishCount)
+//				score.setWinner(Score.ANGLER_FRIENDS);
+//			else if(angledFishCount < freeFishCount)
+//				score.setWinner(Score.FISH_FRIENDS);			 
+//		}		
+//		else if(allFishesAngled())
+//			score.setWinner(Score.ANGLER_FRIENDS);
+//		else if(allFishesInSea())
+//			score.setWinner(Score.FISH_FRIENDS);	
+//		else 
+//			isOver = false;
+//				
+//		return isOver; 		
+//	}	
+		
 	private void fishing(Position anglerPosition)
 	{
 		List<Figure> fishedFishes;
@@ -137,8 +212,7 @@ public class Field {
 		{
 			fishedFishes = riverParts.get(anglerPosition.getX() + 1).getFigures(); 
 			riverParts.get(anglerPosition.getX()).appendFigureLst(fishedFishes);
-		}
-			
+		}			
 	}
 	
 	public Position getFigurePosition(Color color)
