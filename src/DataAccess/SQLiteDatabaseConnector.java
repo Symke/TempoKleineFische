@@ -24,7 +24,11 @@ public class SQLiteDatabaseConnector implements IDatabaseConnector {
 		this.password = password;
 	}
 	
-	public void connect() {
+	/**
+	 * Create a connection to the given database and creates one if it
+	 * 
+	 */
+	public void connect() throws SQLException {
         try {
             String connectionString = "jdbc:sqlite:" + url;
             
@@ -34,9 +38,10 @@ public class SQLiteDatabaseConnector implements IDatabaseConnector {
             System.out.println("Connection to SQLite has been established.");
             
         } catch (SQLException e) {
-            //TODO exception handling
+            throw new SQLException();
         } 
-    }
+    }	
+	
 		
 	@Override
 	public void close() {

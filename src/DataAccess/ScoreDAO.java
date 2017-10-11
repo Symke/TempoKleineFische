@@ -18,15 +18,34 @@ import java.util.Set;
 
 import javax.swing.text.AbstractDocument.LeafElement;
 
-import Model.Score;
+import Data.Score;
 
 public class ScoreDAO implements IScoreDAO {
 
-	private String filename = "c:\\out\\test.ser";
-	private Connection connection; 
-	
+	// Const
+	private static final String TABLE_NAME = "Score";
+
+	private Connection connection;
+	private String tableName; 
+
 	public ScoreDAO(Connection connection) {
+		this(connection, TABLE_NAME);
+	}
+	
+	public ScoreDAO(Connection connection, String tableName) {
 		this.connection = connection;
+		this.tableName  = tableName;
+		
+		createTable();
+	}	
+	
+	public String getTableName() {
+		return tableName;
+	}
+	
+	public void init()
+	{
+		
 	}
 	
 	@Override
@@ -40,9 +59,7 @@ public class ScoreDAO implements IScoreDAO {
 	        Set<Score> scores = new HashSet<Score>();
 
 	        while(rs.next())
-
 	        {
-
 	            Score score = new Score();
 	            score.setId(rs.getInt("ID"));
 	            score.setWinner(rs.getInt("Winner"));
@@ -52,15 +69,12 @@ public class ScoreDAO implements IScoreDAO {
 	            score.setRightRiverPartsCount(rs.getInt("RightRiverPartsCount"));
 	            
 	            scores.add(score);
-
 	        }
 
 	        return scores;
 
 	    } catch (SQLException ex) {
-
 	        ex.printStackTrace();
-
 	    }
 
 	    return null;
@@ -68,8 +82,8 @@ public class ScoreDAO implements IScoreDAO {
 	
 	
 	@Override
-	public void addScore(Score score) {
-		
+	public boolean addScore(Score score) {
+		boolean successful = true; 		
 	    try {
 
 	        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Score VALUES (NULL, ?, ?, ?, ?, ?)");
@@ -80,23 +94,23 @@ public class ScoreDAO implements IScoreDAO {
 	        preparedStatement.setInt(4, score.getLeftRiverPatsCount());
 	        preparedStatement.setInt(5, score.getRightRiverPartsCount());
 	        
-	        int i = preparedStatement.executeUpdate();
+	        preparedStatement.executeUpdate();
 	   
 
-	    } catch (SQLException ex) {
-
+	    } catch (SQLException ex) {	    	
+	    	successful = false;
 	        ex.printStackTrace();
-
 	    }
 		
+	    return successful; 
 	}
 	
 	@Override
 	public int getAnglersFriendsWonCount() {
-		int count = 0;
+		int count = -1;
 		try {
 
-	        PreparedStatement preparedStatement = connection.prepareStatement("Select count(*) as AnglersWonCount From score Where winner =" + Score.ANGLER_FRIENDS +";");	        	        
+	        PreparedStatement preparedStatement = connection.prepareStatement("Select count(*) as AnglersWonCount From "+ getTableName() + " Where winner =" + Score.ANGLER_FRIENDS +";");	        	        
 	        ResultSet resultSet = preparedStatement.executeQuery();
 	        
 	        count = resultSet.getInt("AnglersWonCount");
@@ -112,10 +126,10 @@ public class ScoreDAO implements IScoreDAO {
 	
 	@Override
 	public int getFisherFriendsWonCount() {
-		int count = 0;
+		int count = -1;
 		try {
 
-	        PreparedStatement preparedStatement = connection.prepareStatement("Select count(*) as AnglersWonCount From score Where winner =" + Score.FISH_FRIENDS +";");	        	        
+	        PreparedStatement preparedStatement = connection.prepareStatement("Select count(*) as AnglersWonCount From "+ getTableName() + " Where winner =" + Score.FISH_FRIENDS +";");	        	        
 	        ResultSet resultSet = preparedStatement.executeQuery();
 	        
 	        count = resultSet.getInt("AnglersWonCount");
@@ -128,6 +142,28 @@ public class ScoreDAO implements IScoreDAO {
 	    }
 		return count;
 	}
+	
+    @Override
+    public void createTable() {
+        String sqlCreate = "CREATE TABLE IF NOT EXISTS " + this.getTableName()
+                + "  (ID           			INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
+                + "   Winner            	INTEGER,"
+                + "   FishCount          	INTEGER,"
+                + "   AnglersCount          INTEGER,"
+                + "   LeftRiverPartsCount   INTEGER,"
+                + "   RightRiverPartsCout   INTEGER)";
+
+       
+		
+        try {
+        	Statement stmt = connection.createStatement();
+			stmt.execute(sqlCreate);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+    }
 	
 	@Override
 	public void deleteScore() {

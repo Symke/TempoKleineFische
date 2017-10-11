@@ -1,14 +1,13 @@
 package Game;
-import Model.GameSettings;
-import Model.Position;
-import Model.Score;
-
 import java.io.ObjectInputStream.GetField;
 import java.util.Random;
 
+import Data.Color;
+import Data.GameSettings;
+import Data.Position;
+import Data.Score;
 import DataAccess.IScoreDAO;
 import DataAccess.ScoreDAO;
-import Model.Color;
 
 /**
  * @author martina.kettenbach
@@ -26,23 +25,24 @@ public class Game {
 		this.field 		  = new Field(gameSettings);	
 		this.score        = new Score();		
 	}
-	
+		
 	/**
 	 * 
 	 * @return score of the game
+	 * @throws Exception 
 	 */
-	public Score play()
+	public Score play() 
 	{		
-		Color color = null; 	
+		Color color = null;
 		field.initField();
-		
-		while (!isGameOver()) {
-			color  = rollTheDice();
 			
+		while (!field.isGameOver()) {
+			color = rollTheDice();			
 			field.move(color);		
-			drawGame(field);			
-		} 
+			drawGame(field);	
+		}
 				
+		score.setWinner(field.getWinner());
 		score.setAnglersCount(gameSettings.getAnglers().size());
 		score.setFishCount(gameSettings.getFishes().size());
 		score.setLeftRiverPartsCount(gameSettings.getRiverPartsLeftCount());
@@ -51,45 +51,12 @@ public class Game {
 		return score;
 			
 	}	
-	
-	/**
-	 * Game is over if,
-	 * 	- boat reach the sea
-	 *  - all fishes are in the sea
-	 *  - all fishes are angled 
-	 * @return the winner 
-	 */
-	public boolean isGameOver()
-	{
-		boolean isOver = true; 
-		
-		int angledFishCount = field.getAngeldFishCount(); 
-		int freeFishCount   = field.getSeaPart().getFigures().size(); 
-		
-		if (field.boatReachSea()) 
-		{						
-			if(angledFishCount == freeFishCount)
-				score.setWinner(Score.DRAW);
-			else if(angledFishCount > freeFishCount)
-				score.setWinner(Score.ANGLER_FRIENDS);
-			else if(angledFishCount < freeFishCount)
-				score.setWinner(Score.FISH_FRIENDS);			 
-		}		
-		else if(field.allFishesAngled())
-			score.setWinner(Score.ANGLER_FRIENDS);
-		else if(field.allFishesInSea())
-			score.setWinner(Score.FISH_FRIENDS);	
-		else 
-			isOver = false;
-				
-		return isOver; 		
-	}	
 		
 	/**
 	 * 
 	 * @return random color of the possible colors 
 	 */
-	private Color rollTheDice()
+	private static Color rollTheDice()
 	{
 		Random randomGenerator = new Random();			
 		int rndColorIndex = randomGenerator.nextInt(Color.values().length);

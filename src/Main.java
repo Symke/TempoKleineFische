@@ -1,10 +1,12 @@
+import java.sql.SQLException;
+
+import Data.GameSettings;
+import Data.Score;
 import DataAccess.IDatabaseConnector;
 import DataAccess.IScoreDAO;
 import DataAccess.SQLiteDatabaseConnector;
 import DataAccess.ScoreDAO;
 import Game.Game;
-import Model.GameSettings;
-import Model.Score;
 
 /**
  * 
@@ -29,13 +31,21 @@ public class Main {
 		// Save score
 		String url = "C:\\Workspaces\\JavaProjects\\TempoKleineFische\\database\\TempoKleineFische.db";
 		IDatabaseConnector databaseConnector = new SQLiteDatabaseConnector(url, "", "");
-		databaseConnector.connect();
 		
-		IScoreDAO scoreDAO = new ScoreDAO(databaseConnector.getConnection());
-		scoreDAO.addScore(score);	
-		
-		System.out.println("FishFriendsWonCount: " + scoreDAO.getFisherFriendsWonCount());
-		System.out.println("AnglersFriendsWonCount: " + scoreDAO.getAnglersFriendsWonCount());
+		try {
+			databaseConnector.connect();
+			
+			IScoreDAO scoreDAO = new ScoreDAO(databaseConnector.getConnection());
+			scoreDAO.addScore(score);	
+			
+			System.out.println("FishFriendsWonCount: " + scoreDAO.getFisherFriendsWonCount());
+			System.out.println("AnglersFriendsWonCount: " + scoreDAO.getAnglersFriendsWonCount());
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+				
 	}
 	
 

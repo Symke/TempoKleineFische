@@ -6,17 +6,15 @@ import java.util.List;
 import javax.swing.text.DefaultEditorKit.DefaultKeyTypedAction;
 
 import org.junit.Before;
-
-import Model.Color;
-import Model.Figure;
-import Model.GameSettings;
-import Model.Position;
-import Model.RiverPart;
-import Model.Score;
-import Model.Figure.FigureType;
-
 import org.junit.Test;
 
+import Data.Color;
+import Data.Figure;
+import Data.GameSettings;
+import Data.Position;
+import Data.RiverPart;
+import Data.Score;
+import Data.Figure.FigureType;
 import Game.Field;
 import Game.Game;
 
@@ -73,6 +71,14 @@ public class FieldTest {
 		assertEquals(4, field.getRiverPartByIndex(6).getFigures().size());		
 	}
 		
+	@Test(expected = IllegalArgumentException.class)
+	public void testMoveEmptyColor() {			
+		Field field = new Field(defaultGameSettings);		
+		field.initField();
+		
+		field.move(null);
+				
+	}
 			
 	@Test
 	public void testMoveFish() {			
@@ -138,7 +144,7 @@ public class FieldTest {
 		field.initField();
 		
 		// move fish to sea
-		for (int i = 0; i <=defaultGameSettings.getRiverPartsRightCount()+1; i++) {
+		for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount()+1; i++) {
 			field.move(Color.PINK);			
 		}
 		
@@ -163,97 +169,142 @@ public class FieldTest {
 		assertEquals(2, field.getRiverSize());
 	}
 	
-//	@Test
-//	public void allFishesReachedSea() {			
-//		Score score = new Score();
-//		Field field = new Field(defaultGameSettings);		
-//		field.initField();
-//		
-//		//=============================================
-//		//move all fishes to sea
-//		for(Color color : defaultGameSettings.getFishes()){
-//			for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) 			{
-//				field.move(color);
-//			}
-//		}		
-//
-//		assertTrue(field.isGameOver(score));
-//		assertEquals(Score.FISH_FRIENDS, score.getWinner());
-//		Game.drawGame(field);
-//	}
-//	
-//	@Test
-//	public void allFishesAngled() {
-//		Score score = new Score();
-//		Field field = new Field(defaultGameSettings);		
-//		field.initField();
-//		
-//		for (int i = 0; i <= defaultGameSettings.getRiverPartsLeftCount(); i++) {
-//			field.move(Color.RED);
-//			Game.drawGame(field);
-//		}
-//		
-//		Game.drawGame(field);
-//
-//		assertTrue(field.isGameOver(score));
-//		assertEquals(Score.ANGLER_FRIENDS, score.getWinner());
-//	}
-//	
-//	@Test
-//	public void boatReachedSeaFishFriedsWin() {
-//		Score score = new Score();
-//		Field field = new Field(defaultGameSettings);		
-//		field.initField();
-//		
-//		for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) 			{
-//			field.move(Color.YELLOW);
-//			field.move(Color.PINK);
-//			field.move(Color.ORANGE);			
-//		}
-//		
-//		do {
-//			field.move(Color.RED);
-//		} while (field.getRiverSize() > 2);
-//		
-//		assertTrue(field.isGameOver(score));
-//		assertEquals(Score.FISH_FRIENDS, score.getWinner());
-//	}
-//		
-//	@Test
-//	public void boatReachedSeaFisherFriendsWin() {
-//		Score score = new Score();
-//		Field field = new Field(defaultGameSettings);		
-//		field.initField();
-//		
-//		for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) 			{
-//			field.move(Color.YELLOW);			
-//		}
-//		
-//		do {
-//			field.move(Color.RED);
-//		} while (field.getRiverSize() > 2);
-//		
-//		assertTrue(field.isGameOver(score));
-//		assertEquals(Score.ANGLER_FRIENDS, score.getWinner());
-//	}
-//	
-//	@Test
-//	public void testGameEndedInDraw() {
-//		Score score = new Score();
-//		Field field = new Field(defaultGameSettings);		
-//		field.initField();
-//		
-//		for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) 			{
-//			field.move(Color.YELLOW);		
-//			field.move(Color.ORANGE);		
-//		}
-//		
-//		do {
-//			field.move(Color.RED);
-//		} while (field.getRiverSize() > 2);
-//		
-//		assertTrue(field.isGameOver(score));
-//		assertEquals(Score.DRAW, score.getWinner());
-//	}
+	@Test
+	public void allFishesReachedSea() {			
+		Field field = new Field(defaultGameSettings);		
+		field.initField();
+		
+		//=============================================
+		//move all fishes to sea
+		for(Color color : defaultGameSettings.getFishes()){
+			for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) {
+				field.move(color);
+			}
+		}		
+		
+		assertTrue(field.isGameOver());
+		assertEquals(Score.FISH_FRIENDS, field.getWinner());
+		Game.drawGame(field);
+	}
+	
+	@Test
+	public void allFishesAngled() {
+		Field field = new Field(defaultGameSettings);		
+		field.initField();
+		
+		for (int i = 0; i <= defaultGameSettings.getRiverPartsLeftCount(); i++) {
+			field.move(Color.RED);
+			Game.drawGame(field);
+		}
+		
+		Game.drawGame(field);
+		assertTrue(field.isGameOver());
+		assertEquals(Score.ANGLER_FRIENDS, field.getWinner());
+	}
+	
+
+	@Test
+	public void testBoatReachedSeaFishFriedsWin() {
+		Field field = new Field(defaultGameSettings);		
+		field.initField();
+		
+		// angle fishes
+		for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) 			{
+			field.move(Color.YELLOW);
+			field.move(Color.PINK);
+			field.move(Color.ORANGE);			
+		}
+		
+		// move boat to sea
+		do {
+			field.move(Color.RED);
+		} while (field.getRiverSize() > 2);
+			
+		Game.drawGame(field);
+		assertTrue(field.isGameOver());
+		assertEquals(Score.FISH_FRIENDS, field.getWinner());
+		
+	}
+	
+	@Test
+	public void testGameIsOverTryToMove() {
+		Field field = new Field(defaultGameSettings);		
+		field.initField();
+		
+		// angle fishes
+		for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) 			{
+			field.move(Color.YELLOW);
+			field.move(Color.PINK);
+			field.move(Color.ORANGE);			
+		}
+		
+		Game.drawGame(field);
+		// move boat to sea
+		do {
+			field.move(Color.RED);
+		} while (field.getRiverSize() > 2);
+			
+		assertTrue(field.isGameOver());
+		assertFalse(field.move(Color.ORANGE));		
+	}
+	
+	@Test
+	public void fdg() {
+		Field field = new Field(defaultGameSettings);		
+		field.initField();
+		
+		// angle fishes
+		for (int i = 0; i <= defaultGameSettings.getRiverPartsLeftCount(); i++) 			{
+			field.move(Color.YELLOW);
+			field.move(Color.PINK);
+			field.move(Color.ORANGE);
+			field.move(Color.BLUE);	
+		}
+		System.out.println(field.toString());
+		field.move(Color.BLUE);	
+		assertEquals(Score.FISH_FRIENDS, field.getWinner());
+	}
+		
+	@Test
+	public void boatReachedSeaAnglerFriendsWin() {
+		Field field = new Field(defaultGameSettings);		
+		field.initField();
+		
+		// angle fishes
+		for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) 			{
+			field.move(Color.YELLOW);			
+		}
+		
+		// move boat to sea
+		do {
+			field.move(Color.RED);
+		} while (field.getRiverSize() > 2);
+		
+		assertTrue(field.isGameOver());
+		assertEquals(Score.ANGLER_FRIENDS, field.getWinner());
+	}
+	
+	@Test
+	public void testGameEndedInADraw() { 
+		Field field = new Field(defaultGameSettings);		
+		field.initField();
+		
+		// angle fishes
+		for (int i = 0; i <= defaultGameSettings.getRiverPartsRightCount(); i++) 			{
+			field.move(Color.YELLOW);		
+			field.move(Color.ORANGE);		
+		}
+		
+		// move boat to sea
+		do {
+			field.move(Color.RED);
+		} while (field.getRiverSize() > 2);
+		
+		Game.drawGame(field);
+		
+		assertTrue(field.isGameOver());
+		assertEquals(Score.DRAW, field.getWinner());
+		
+	}
 	
 }

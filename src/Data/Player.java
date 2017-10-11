@@ -1,6 +1,6 @@
-package Model;
+package Data;
 
-import Model.Figure.FigureType;
+import Data.Figure.FigureType;
 
 public class Player {
 	private String name;

@@ -1,9 +1,10 @@
 package DataAccess;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public interface IDatabaseConnector {
-	public void connect();
-	public Connection getConnection();
+	public void connect() throws SQLException;
+	public Connection getConnection() throws SQLException;
 	public void close();
 }
