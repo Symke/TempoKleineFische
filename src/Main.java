@@ -1,12 +1,13 @@
 import java.sql.SQLException;
 
-import Data.GameSettings;
-import Data.Score;
-import DataAccess.IDatabaseConnector;
-import DataAccess.IScoreDAO;
-import DataAccess.SQLiteDatabaseConnector;
-import DataAccess.ScoreDAO;
-import Game.Game;
+import data.GameSettings;
+import data.Position;
+import data.Score;
+import dataAccess.IDatabaseConnector;
+import dataAccess.IScoreDAO;
+import dataAccess.SQLiteDatabaseConnector;
+import dataAccess.ScoreDAO;
+import game.Game;
 
 /**
  * 
@@ -27,9 +28,12 @@ public class Main {
 		score = game.play();
 		System.out.println("Current winner:" + score.getWinner());
 		
-		//---------------------------------------------------
-		// Save score
-		String url = "C:\\Workspaces\\JavaProjects\\TempoKleineFische\\database\\TempoKleineFische.db";
+		saveScore(score);						
+	}
+	
+	public static void saveScore(Score score)
+	{
+		String url = "database\\TempoKleineFische.db";
 		IDatabaseConnector databaseConnector = new SQLiteDatabaseConnector(url, "", "");
 		
 		try {
@@ -45,8 +49,6 @@ public class Main {
 			
 			e.printStackTrace();
 		}
-				
 	}
-	
 
 }

@@ -1,6 +1,6 @@
-package Data;
+package data;
 
-import java.time.Period;
+import java.util.Objects;
 
 public class Position {
 	private int x;
@@ -26,17 +26,29 @@ public class Position {
 	
 	public void setX(int x) {
 		this.x = x;
+	}	
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(x, y);
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		boolean result = true;
-		Position target = (Position)obj; 
+
+		if(!super.equals(obj)) {
+			return false;
+		}
 		
-		result &= this.x == target.x;		
-		result &= this.y == target.y;	
+		Position target = (Position)obj; 		
+		if(this.x != target.x) {
+			return false;
+		}
+		if(this.y != target.y) {
+			return false;
+		}
 		
-		return result;
+		return true;
 	}
 	
 }

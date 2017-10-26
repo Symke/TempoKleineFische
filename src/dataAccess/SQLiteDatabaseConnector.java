@@ -1,4 +1,4 @@
-package DataAccess;
+package dataAccess;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -49,7 +49,6 @@ public class SQLiteDatabaseConnector implements IDatabaseConnector {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}

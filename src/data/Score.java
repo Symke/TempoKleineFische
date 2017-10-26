@@ -1,6 +1,7 @@
-package Data;
+package data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author martina.kettenbach
@@ -71,6 +72,40 @@ public class Score implements Serializable {
 	public void setRightRiverPartsCount(int rightRiverPartsCount) {
 		this.rightRiverPartsCount = rightRiverPartsCount;
 	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(anglersCount, fishCount, id, leftRiverPartsCount, rightRiverPartsCount, winner);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+
+		if(!super.equals(obj))
+			return false;
+		
+		Score target = (Score)obj; 		
+		if(this.anglersCount != target.anglersCount)		{
+			return false;
+		}
+		if(this.fishCount != target.fishCount) {
+			return false;
+		}
+		if(this.id != target.id) {
+			return false;
+		}
+		if(this.leftRiverPartsCount != target.leftRiverPartsCount) {
+			return false;
+		}
+		if(this.rightRiverPartsCount != target.rightRiverPartsCount) {
+			return false;
+		}
+		if(this.winner != target.winner) {
+			return false;
+		}
+		
+		return true;
+	}	
 
 	@Override
 	public String toString() {

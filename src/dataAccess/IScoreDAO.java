@@ -1,10 +1,10 @@
-package DataAccess;
+package dataAccess;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-import Data.Score;
+import data.Score;
 
 public interface IScoreDAO {
 	public Set<Score> readAllScores();

@@ -8,24 +8,27 @@ import javax.swing.text.DefaultEditorKit.DefaultKeyTypedAction;
 import org.junit.Before;
 import org.junit.Test;
 
-import Data.Color;
-import Data.Figure;
-import Data.GameSettings;
-import Data.Position;
-import Data.RiverPart;
-import Data.Score;
-import Data.Figure.FigureType;
-import Game.Field;
-import Game.Game;
+import data.Dice.Color;
+import data.Figure;
+import data.GameSettings;
+import data.Position;
+import data.RiverPart;
+import data.Score;
+import data.Figure.FigureType;
+import game.Field;
+import game.Game;
 
 public class FieldTest {
 	
 	GameSettings defaultGameSettings;
+	Game game;
 	
 	@Before
 	public void init()
 	{
 		defaultGameSettings  = new GameSettings();
+		
+		//game = mock(Game.class);
 	}
 	
 	@Test
@@ -160,8 +163,9 @@ public class FieldTest {
 		field.initField();
 		
 		// move fish to sea
-		for (int i = 0; i <=gameSettings.getRiverPartsRightCount(); i++) 
+		for (int i = 0; i <=gameSettings.getRiverPartsRightCount(); i++) {
 			field.move(Color.PINK);
+		}
 		
 		field.move(Color.RED);		
 		field.move(Color.PINK); 
@@ -248,22 +252,6 @@ public class FieldTest {
 		assertFalse(field.move(Color.ORANGE));		
 	}
 	
-	@Test
-	public void fdg() {
-		Field field = new Field(defaultGameSettings);		
-		field.initField();
-		
-		// angle fishes
-		for (int i = 0; i <= defaultGameSettings.getRiverPartsLeftCount(); i++) 			{
-			field.move(Color.YELLOW);
-			field.move(Color.PINK);
-			field.move(Color.ORANGE);
-			field.move(Color.BLUE);	
-		}
-		System.out.println(field.toString());
-		field.move(Color.BLUE);	
-		assertEquals(Score.FISH_FRIENDS, field.getWinner());
-	}
 		
 	@Test
 	public void boatReachedSeaAnglerFriendsWin() {
